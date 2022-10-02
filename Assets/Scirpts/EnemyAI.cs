@@ -87,22 +87,14 @@ public class EnemyAI : LivingEntity  //LivingEntity에서 이미 onDamage 받음
                 enemeyNav.isStopped = true;
                 enemyAnimator.SetBool("HasTarget", hasTarget);
 
-                //반지름 20f의 콜라이더로 Target레이어를 가진 콜라이더 검출
-                Collider[] colliders = Physics.OverlapSphere(transform.position, 20f, whatIsTarget);
-
-                for (int i=0;i<colliders.Length;i++)
+                LivingEntity playerEntity = GameObject.FindGameObjectWithTag("Player").GetComponent<LivingEntity>();
+                if (playerEntity != null && !playerEntity.dead)
                 {
-                    //콜라이더로부터 LivingEntity 컴포넌트 가져오기
-                    LivingEntity playerEntity = colliders[i].GetComponent<LivingEntity>();
-                    if(playerEntity!=null&&!playerEntity.dead)
-                    {
-                        this.targetEntity = playerEntity;   //경로 계산에서 targetEntity 지정
-
-                        break;
-                    }
+                    this.targetEntity = playerEntity;
                 }
             }
             yield return new WaitForSeconds(0.25f);    //0.25초마다 경로 갱신
+            StartCoroutine(UpdatePath());
         }
     }
 
